@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.dn.config.CacheServiceAutoConfiguration,\
 com.dn.config.CacheAutoConfiguration
