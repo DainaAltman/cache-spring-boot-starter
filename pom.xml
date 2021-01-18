@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.dn</groupId>
-    <artifactId>dn-spring-boot-starter</artifactId>
+    <artifactId>cache-spring-boot-starter</artifactId>
     <version>0.0.1.RELEASE</version>
 
     <parent>
