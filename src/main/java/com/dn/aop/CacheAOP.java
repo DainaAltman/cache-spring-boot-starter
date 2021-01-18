@@ -42,7 +42,9 @@ public class CacheAOP {
             cacheName = nameSpaceService.cacheName(method, args);
         }
 
-        log.info("类 [{}] 下的方法 [{}] 对应的缓存名称为: {}", jp.getTarget().getClass().getName(), method.getName(), cacheName);
+        if (log.isDebugEnabled() || log.isInfoEnabled()) {
+            log.info("类 [{}] 下的方法 [{}] 对应的缓存名称为: {}", jp.getTarget().getClass().getName(), method.getName(), cacheName);
+        }
         String json = cacheService.get(cacheName);
 
         // 拿到 json 序列化和反序列化策略
@@ -73,13 +75,17 @@ public class CacheAOP {
             // 进行反序列化机制, 传入反序列化前的 json 串, 以及方法返回类型, 和方法返回泛型
             return cacheHandler.deserialization(json, methodReturnType, MethodUtils.getMethodGenericTypes(method));
         }
-        log.info("没有命中缓存");
+        if (log.isDebugEnabled() || log.isInfoEnabled()) {
+            log.info("没有命中缓存");
+        }
         // 执行原来的代码逻辑
         Object proceed = jp.proceed();
 
         // 如果方法没有返回值, 那就没必要序列化了
         if (!void.class.isAssignableFrom(methodReturnType)) {
-            log.info("此方法需要被缓存");
+            if (log.isDebugEnabled() || log.isInfoEnabled()) {
+                log.info("类 [{}] 下的方法 [{}] 需要被缓存", jp.getTarget().getClass().getName(), method.getName());
+            }
 
             long ttl = cache.time();
 
