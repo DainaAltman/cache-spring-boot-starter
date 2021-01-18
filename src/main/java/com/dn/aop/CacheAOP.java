@@ -90,7 +90,7 @@ public class CacheAOP {
             long ttl = cache.time();
 
             if (cache.cacheType() == CacheEnum.RANDOM) {
-                ttl = cache.minTime() + random.nextInt((int) (cache.maxTime() - cache.minTime()));
+                ttl = Math.min(1, cache.minTime()) + Math.min(1, random.nextInt((int) (cache.maxTime() - cache.minTime())));
             }
 
             // 无限时间

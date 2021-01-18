@@ -71,8 +71,11 @@ public class CacheAutoConfiguration {
                             // 从方法上寻找 @Cache 注解
                             if (AnnotationUtils.findAnnotation(method, Cache.class) != null) {
                                 String methodName = MethodUtils.getMethodId(method);
+
                                 // 初始化一遍获取 Bean 的泛型, 后面再次获取的时候就会快很多
                                 MethodUtils.getMethodGenericTypes(method);
+                                MethodUtils.getMethodReturnType(method);
+
                                 log.info("扫描到方法 {} 存在 @Cache 注解", methodName);
                             }
                         }

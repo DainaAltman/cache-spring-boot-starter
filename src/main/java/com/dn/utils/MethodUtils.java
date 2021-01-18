@@ -6,10 +6,7 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 方法相关的工具类, 简化方法的解析
@@ -134,19 +131,24 @@ public class MethodUtils {
         String methodId = getMethodId(method);
         Class<?> returnType = returnTypeCache.get(methodId);
 
-        if(returnType == null) {
+        if (returnType == null) {
             // 基于唯一标识进行上锁, 将锁细粒度化. 避免线程冲突
             synchronized (methodId) {
                 returnType = method.getReturnType();
 
+                // 对于 List.class, Map.class, Set.class 不做任何处理
+                if (List.class.isAssignableFrom(returnType) || Map.class.isAssignableFrom(returnType) || Set.class.isAssignableFrom(returnType)) {
+
+                }
+
                 // 如果它是一个接口 或者 它是一个抽象类. 那么我们在进行 JSON 转换的时候是会抛出异常的. 为了解决这个问题. 我们需要拿到它的实现类
-                if (returnType.isInterface() || Modifier.isAbstract(returnType.getModifiers())) {
+                else if (returnType.isInterface() || Modifier.isAbstract(returnType.getModifiers())) {
                     List<Class> implementationClass = ClassUtils.getImplementationClass(returnType);
                     if (implementationClass.size() > 1) {
                         throw new ReturnTypeException("返回值类型为 [" + returnType.getName() + "] 的方法" + method.getName() + " 无法完成序列化操作, 因为它的实现类太多了. 如果要反序列化, 必须保证返回值类型为具体对象, 或者是只有一个子类的抽象类和接口");
                     }
                     if (implementationClass.size() == 0) {
-                        throw new ReturnTypeException("返回值类型为 [" + returnType.getName() + "] 的方法 " + method.getName() + " 无法完成序列化操作, 因为返回类型没有实现类");
+                        throw new ReturnTypeException("返回值类型为 [" + returnType.getName() + "] 的方法 " + method.getName() + " 无法完成序列化操作, 因为返回类型在目前我们定义的类中找不到实现");
                     }
                     returnType = implementationClass.get(0);
                 }
