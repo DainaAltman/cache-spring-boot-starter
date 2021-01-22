@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class JsonUtils {
@@ -48,8 +49,35 @@ public class JsonUtils {
         return Arrays.asList(GSON.fromJson(json, TypeToken.getArray(clazz).getType()));
     }
 
+    /**
+     * 将一个 json 字符串转换为 List
+     *
+     * @param json json字符串
+     * @return
+     */
     public static List<Object> toList(String json) {
         return toList(jsonArray(json));
+    }
+
+    /**
+     * 将一个 json 字符串转换为 Set
+     *
+     * @param json json字符串
+     * @return
+     */
+    public static Set<Object> toSet(String json) {
+        return toList(json).stream().collect(Collectors.toSet());
+    }
+
+    /**
+     * 将一个 json 字符串转换为 Set, 并且指定 Set 元素中的 Bean 类型
+     * @param json  json字符串
+     * @param clazz Bean类型
+     * @param <T>
+     * @return
+     */
+    public static <T> Set<T> toSet(String json, Class<T> clazz) {
+        return toList(json, clazz).stream().collect(Collectors.toSet());
     }
 
     /**
@@ -128,7 +156,7 @@ public class JsonUtils {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (value instanceof JsonArray) {
-                map.put(key, toList(value.toString(), List.class));
+                map.put(key, toList((JsonArray) value));
             } else if (value instanceof JsonObject) {
                 map.put(key, toMap((JsonObject) value));
             } else {
@@ -160,5 +188,4 @@ public class JsonUtils {
     public static <T> String toJson(T bean) {
         return GSON.toJson(bean, bean.getClass());
     }
-
 }

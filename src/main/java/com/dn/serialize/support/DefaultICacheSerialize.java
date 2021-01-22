@@ -28,9 +28,9 @@ public class DefaultICacheSerialize implements ICacheSerialize {
         // 如果它是一个 Set.class
         if (Set.class.isAssignableFrom(methodReturnType)) {
             if (genericTypes != null && genericTypes.size() > 0) {
-                return new HashSet(JsonUtils.toList(json, genericTypes.get(0)));
+                return JsonUtils.toSet(json, genericTypes.get(0));
             }
-            return new HashSet(JsonUtils.toList(json));
+            return JsonUtils.toSet(json);
         }
 
         // 如果它是一个 Map.class

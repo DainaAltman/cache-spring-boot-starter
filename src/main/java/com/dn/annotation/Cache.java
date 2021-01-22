@@ -13,14 +13,20 @@ import java.lang.annotation.*;
 public @interface Cache {
 
     /**
-     * 缓存名称
+     * 缓存名称, 默认使用 方法名(参数类型:参数具体传入值...) 作为一个缓存的key
      *
      * @return
      */
     String cacheName() default "";
 
     /**
-     * 缓存有效期
+     * 缓存所属组名称, 默认使用当前 @Cache 标记方法的所属类作为组名称
+     * @return
+     */
+    String cacheGroup() default "";
+
+    /**
+     * 缓存有效期, 当设置值低于0时表示无有效期限制
      *
      * @return
      */
@@ -44,14 +50,6 @@ public @interface Cache {
      * @return
      */
     long heatTime() default 10;
-
-    /**
-     * 会话级别的数据, 至少要求时间必须在 600s 以上. 如果
-     * 低于 600s, 则使用 600s
-     *
-     * @return
-     */
-    long sessionTime() default 1800;
 
     /**
      * 自定义缓存的 序列化机制 和 反序列化机制 ,默认是将返回值转换为 json,

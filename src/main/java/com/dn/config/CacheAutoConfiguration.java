@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  * 用户必须配置 ICacheService 的实例才能使用这个 cache-aop 依赖
  * 因为不同的用户, 可能需要的缓存数据存储策略不同, 可能存在 Redis 的缓存, MemoryCache 的缓存.
  * MongoDB 的缓存, ElasticSearch 的缓存...
- *
+ * <p>
  * 我这里不能写死, 所以直接把具体的缓存业务逻辑交给用户实现. 我这里只实现数据库数据的
  * json序列化 和 json 反序列化.
  */
@@ -44,6 +44,7 @@ public class CacheAutoConfiguration {
 
     /**
      * 当用户没有配置 cache 的命名规则, 则使用默认的命名规则
+     *
      * @return
      */
     @Bean
@@ -52,6 +53,14 @@ public class CacheAutoConfiguration {
         return new DefaultNameSpaceService();
     }
 
+    /**
+     * 基于 Spring 的 ApplicationListener 进行的扩展, 当整个 Spring 的 Bean全部解析完成后, 我们
+     * 会针对 Spring 的 Bean 进行扫描. 解析包含 @Cache 注解的 SpringBean, 然后将他们的返回值类型和
+     * 返回值类型中的泛型放到 MethodUtils 中对应的缓存中. 当下次获取的时候, 我们就可以直接从缓存中获取,
+     * 从而提升反射的性能
+     *
+     * @return
+     */
     @Bean
     public ApplicationListener<ContextRefreshedEvent> cacheEvent() {
         return event -> {
@@ -88,7 +97,8 @@ public class CacheAutoConfiguration {
     }
 
     /**
-     * 配置 aop
+     * 基于 Spring 的 AOP 配置的针对 @Cache 的 Aspect 类
+     *
      * @return
      */
     @Bean

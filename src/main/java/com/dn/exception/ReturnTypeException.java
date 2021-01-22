@@ -1,5 +1,8 @@
 package com.dn.exception;
 
+/**
+ * 返回值类型异常
+ */
 public class ReturnTypeException extends RuntimeException {
     /**
      * Constructs a new runtime exception with {@code null} as its
